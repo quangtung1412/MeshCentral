@@ -1,0 +1,35 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json",
+  "settings": {
+    "plugins": {
+      "enabled": false
+    },
+    "cert": "HOSTNAME_PLACEHOLDER",
+    "port": 443,
+    "redirPort": 80,
+    "AgentPong": 300,
+    "TLSOffload": true,
+    "SelfUpdate": false,
+    "AllowFraming": false,
+    "WebRTC": true,
+    "mariaDB": {
+      "host": "mysql",
+      "port": "3306",
+      "user": "meshcentral",
+      "password": "DB_PASSWORD_PLACEHOLDER",
+      "database": "meshcentral",
+      "ssl": false
+    }
+  },
+  "domains": {
+    "": {
+      "title": "MeshCentral",
+      "title2": "Remote Management",
+      "minify": true,
+      "NewAccounts": NEW_ACCOUNTS_PLACEHOLDER,
+      "localSessionRecording": true,
+      "certUrl": "HOSTNAME_PLACEHOLDER:443",
+      "allowedOrigin": true
+    }
+  }
+}
