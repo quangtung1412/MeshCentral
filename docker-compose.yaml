@@ -1,0 +1,67 @@
+services:
+  meshcentral:
+    image: ghcr.io/ylianst/meshcentral:latest-mysql
+    container_name: meshcentral
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Tắt DYNAMIC_CONFIG vì dùng config.runtime.json
+      - DYNAMIC_CONFIG=false
+      - NODE_ENV=production
+    volumes:
+      - meshcentral-data:/opt/meshcentral/meshcentral-data
+      - meshcentral-files:/opt/meshcentral/meshcentral-files
+      - meshcentral-web:/opt/meshcentral/meshcentral-web
+      - meshcentral-backups:/opt/meshcentral/meshcentral-backups
+      # Mount generated runtime config (không dùng :ro để cho phép MeshCentral tạo certs)
+      - ./config.runtime.json:/opt/meshcentral/meshcentral-data/config.json
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - meshcentral-network
+
+  mysql:
+    image: mariadb:10.11
+    container_name: meshcentral-mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks:
+      - meshcentral-network
+
+volumes:
+  meshcentral-data:
+    driver: local
+  meshcentral-files:
+    driver: local
+  meshcentral-web:
+    driver: local
+  meshcentral-backups:
+    driver: local
+  mysql-data:
+    driver: local
+
+networks:
+  meshcentral-network:
+    driver: bridge
