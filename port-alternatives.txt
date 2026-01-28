@@ -1,0 +1,25 @@
+# Nếu muốn dùng ports khác thay vì 80/443:
+
+# Option A: Bỏ port 80 (nếu chỉ dùng Cloudflare Tunnel)
+ports:
+  - "443:443"
+  # Port 80 không cần vì traffic qua Cloudflare Tunnel
+
+# Option B: Đổi port 80 sang 8080 (nếu cần local access)
+ports:
+  - "8443:443"
+  - "8080:80"
+
+# Option C: Stop service đang dùng port 80
+# Kiểm tra service nào đang dùng:
+sudo lsof -i :80
+# hoặc
+sudo netstat -tulpn | grep :80
+
+# Nếu là Apache:
+sudo systemctl stop apache2
+sudo systemctl disable apache2
+
+# Nếu là Nginx:
+sudo systemctl stop nginx
+sudo systemctl disable nginx

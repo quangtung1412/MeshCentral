@@ -17,8 +17,9 @@ services:
       # Mount generated runtime config (không dùng :ro để cho phép MeshCentral tạo certs)
       - ./config.runtime.json:/opt/meshcentral/meshcentral-data/config.json
     ports:
+      # Chỉ expose 443 cho Cloudflare Tunnel, bỏ port 80 để tránh conflict
       - "443:443"
-      - "80:80"
+      # - "80:80"  # Không cần nếu dùng Cloudflare Tunnel
     depends_on:
       mysql:
         condition: service_healthy
